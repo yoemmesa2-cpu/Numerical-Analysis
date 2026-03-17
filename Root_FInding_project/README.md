@@ -1,41 +1,104 @@
-# Numerical Root Finding Toolbox
+# Root-Finding Toolbox
 
-## Project Description
-This repository provides a custom-built Python class designed to solve root-finding problems for standard mathematical functions. It does not utilize any external numerical libraries, achieving its logic strictly through standard Python and the `cmath` module.
+A pure-Python numerical root-finding library that solves **f(x) = 0** using seven classical algorithms.  
+No external libraries — only the Python standard library and `cmath`.
 
-## Implemented Methods
-1. Bisection Method
-2. Fixed-point iteration
-3. Newton's method
-4. Secant method
-5. Method of false position (Regular Falsi)
-6. Horner's method
-7. Muller's method
-8. Steffensen's method
-
-## Algorithm Details and Solutions
-* **Bisection & False Position**: Iteratively brackets the root by dividing an interval in half or drawing a secant line between interval bounds until an accurate midpoint/intercept is found.
-* **Newton, Secant, & Steffensen**: Open methods that use tangency, sequential secant lines, or functional transformations to quickly converge on a single starting point or pairs of points.
-* **Fixed-Point**: Transforms the function into a `x = g(x)` format to zero in on the intercept through looping evaluation.
-* **Horner's Method**: Evaluates polynomials optimally through a synthetic division looping structure inside a solver interface.
-* **Muller's Method**: Fits a parabola using three distinct points to handle and find complex roots utilizing the `cmath` package.
+---
 
 ## File Structure
-* `root_finding.py`: Contains the `RootFindingProblem` class and all core algorithmic logic.
-* `examples.py`: A demonstration script verifying functionality across real functions, polynomials, and complex roots.
-* `README.md`: This descriptive file.
+
+```
+root-finding-project/
+├── main.py           ← Run this to start
+├── root_finding.py   ← RootFindingProblem class (all algorithms)
+├── examples.py       ← All method demonstrations
+└── README.md         ← This file
+```
+
+---
 
 ## How to Run
-Navigate to the directory housing the repository files using your terminal and execute:
-`python examples.py`
 
-## Code Example
+```bash
+python main.py
+```
+
+---
+
+## Implemented Methods
+
+| # | Method | Key Arguments |
+|---|--------|---------------|
+| 1 | Bisection | `a`, `b` |
+| 2 | Fixed-Point Iteration | `x0` |
+| 3 | Newton's Method | `x0` |
+| 4 | Secant Method | `x0`, `x1` |
+| 5 | False Position (Regula Falsi) | `a`, `b` |
+| 6 | Horner's Method (polynomial) | `coeffs`, `x0` |
+| 7 | Muller's Method (complex roots) | `x0`, `x1`, `x2` |
+
+---
+
+## Algorithm Descriptions
+
+### 1. Bisection
+Requires a bracket `[a, b]` where `f(a)` and `f(b)` have opposite signs. Repeatedly halves the interval by evaluating f at the midpoint and keeping the half that contains the sign change. **Convergence: linear.**
+
+### 2. Fixed-Point Iteration
+Rewrites the equation as `x = g(x)` and iterates `x_{n+1} = g(x_n)`. Converges when `|g'(x)| < 1` near the root.
+
+### 3. Newton's Method
+Uses the tangent line at each iterate: `x_{n+1} = x_n - f(x_n) / f'(x_n)`. Requires both `f` and `df`. **Convergence: quadratic.**
+
+### 4. Secant Method
+Approximates the derivative with a finite difference using two previous points — no `df` needed. **Convergence: order ≈ 1.618.**
+
+### 5. False Position (Regula Falsi)
+Like bisection but picks the new point via linear interpolation between `(a, f(a))` and `(b, f(b))` instead of the midpoint.
+
+### 6. Horner's Method
+Evaluates `p(x) = a_n x^n + ... + a_0` via nested multiplication. Also computes `p'(x)` in the same pass, enabling Newton iterations on polynomials without symbolic derivatives.
+
+### 7. Muller's Method
+Fits a parabola through three points and uses one of its roots as the next iterate. Uses `cmath.sqrt` to naturally handle **complex roots**. **Convergence: order ≈ 1.84.**
+
+---
+
+## Quick Code Example
+
 ```python
 from root_finding import RootFindingProblem
+import math
 
-def f(x): return x**3 - x - 2
-def df(x): return 3*x**2 - 1
+f  = lambda x: math.cos(x) - x
+df = lambda x: -math.sin(x) - 1
+g  = lambda x: math.cos(x)
 
-problem = RootFindingProblem(f=f, df=df)
-root = problem.solve("newton", x0=1.5)
-print(root)
+p = RootFindingProblem(f=f, df=df, g=g)
+
+p.solve("bisection",     a=0, b=1)
+p.solve("fixed_point",   x0=0.5)
+p.solve("newton",        x0=0.5)
+p.solve("secant",        x0=0, x1=1)
+p.solve("false_position",a=0, b=1)
+
+# Polynomial  x³ - 6x² + 11x - 6 = 0
+p2 = RootFindingProblem()
+p2.solve("horner", coeffs=[1, -6, 11, -6], x0=2.5)
+
+# Complex root of x² + 1 = 0
+p3 = RootFindingProblem(f=lambda x: x**2 + 1)
+p3.solve("muller", x0=0, x1=1, x2=2)
+```
+
+---
+
+## Error Handling
+
+| Situation | Exception |
+|-----------|-----------|
+| Same-sign bracket in bisection / false position | `ValueError` |
+| `df` not supplied to Newton | `ValueError` |
+| `g` not supplied to Fixed-Point | `ValueError` |
+| Derivative or denominator equals zero | `ZeroDivisionError` |
+| No convergence within `max_iter` | `RuntimeError` |
