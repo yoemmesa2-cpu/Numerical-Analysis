@@ -159,5 +159,4 @@ def df(x): return 3*x**2 - 1
 
 problem = RootFindingProblem(f=f, df=df)
 root = problem.solve("newton", x0=1.5)
-print(root)cd "c:\Users\HSC\Desktop\Tech Learning\My Project\Numerical_Analysis\Root_FInding_project"
-git init
+print(root)
