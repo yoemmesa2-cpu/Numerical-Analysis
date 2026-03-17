@@ -1,6 +1,7 @@
 # Numerical-Analysis
 ## Project Description
 This repository provides a custom-built Python class designed to solve root-finding problems for standard mathematical functions. It does not utilize any external numerical libraries, achieving its logic strictly through standard Python and the `cmath` module.
+![Made with Python](https://img.shields.io/badge/Made%20with-Python-1f425f)
 
 ## Implemented Methods
 1. Bisection Method
