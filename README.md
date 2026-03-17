@@ -97,7 +97,7 @@ All seven methods are exercised and results are printed to the terminal.
 
 ```python
 from root_finding import RootFindingProblem
-import math
+import cmath
 
 # Define the function and its derivative
 f  = lambda x: math.cos(x) - x
