@@ -1,4 +1,4 @@
-# Root-Finding Toolbox
+# Root-Finding Problem
 
 A pure-Python numerical root-finding library that solves **f(x) = 0** using seven classical algorithms.  
 No external libraries are required — only the Python standard library and `cmath`.
